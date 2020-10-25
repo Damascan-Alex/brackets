@@ -1,32 +1,18 @@
 module.exports = function check(str, bracketsConfig) {
-    let open = objectify(bracketsConfig);
-    let closed = objectifyBoolean(bracketsConfig);
-
+    let map = new Map();
     let stack = [];
 
+    for (brackets of bracketsConfig) {
+        map.set(brackets[0], brackets[1]);
+    }
+
     for (let i = 0; i < str.length; i++) {
-        let char = str[i];
-        if (open[char]) {
-            stack.push(char);
-        } else if (closed[char]) {
-            if (open[stack.pop()] !== char) return false;
+        if (str[i] === stack[stack.length - 1]) {
+            stack.pop();
+        } else {
+            stack.push(map.get(str[i]));
         }
     }
 
-    return stack.length === 0;
+    return stack.length === 0 ? true : false;
 };
-
-// Transform from array to objects
-function objectify(array) {
-    return array.reduce(function (p, c) {
-        p[c[0]] = c[1];
-        return p;
-    }, {});
-}
-
-function objectifyBoolean(array) {
-    return array.reduce(function (p, c) {
-        p[c[1]] = true;
-        return p;
-    }, {});
-}
